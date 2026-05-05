@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>WOLF LABS | The Smart Home (A1)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Fonts: Quicksand (Friendly/Rounded UI), Inter (Body) & Caveat (Handwriting) -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&family=Quicksand:wght@500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === THE SMART HOME (EYE-CARE / LOW GLARE THEME) === */
+        :root {
+            /* Soothing Soft Blue/Gray palette for Photophobia */
+            --bg-base: #D8E6F0;        /* Soft, calming blue-gray */
+            --bg-panel: #EEF4F8;       /* Very soft tinted off-white (No pure white) */
+            --accent-green: #059669;   /* Emerald 600 (Darker for better comfort) */
+            --accent-blue: #0284C7;    /* Sky 600 (Softer on the eyes) */
+            --accent-red: #DC2626;     /* Red 600 */
+            --text-main: #1E293B;      /* Slate 800 (Soft dark, not pure black) */
+            --text-muted: #475569;     /* Slate 600 */
+            --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.06);
+            --shadow-inner: inset 0 2px 10px rgba(0,0,0,0.03);
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            /* Subtle mesh/grid pattern */
+            background-image: radial-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        h1, h2, h3, .font-display { font-family: 'Quicksand', sans-serif; letter-spacing: -0.02em; }
+        .font-handwriting { font-family: 'Caveat', cursive; font-size: 1.25em; }
+        .font-code { font-family: 'JetBrains Mono', monospace; }
+
+        /* HUD TOP */
+        #hud-top {
+            position: fixed; top: 0; left: 0; right: 0; padding: 15px 30px;
+            background: rgba(216, 230, 240, 0.85); /* Matches --bg-base */
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-light);
+            z-index: 1000;
+        }
+
+        .hud-bar-container { width: 120px; height: 6px; background: rgba(0,0,0,0.05); border-radius: 10px; overflow: hidden; }
+        .hud-bar-fill { height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 10px; }
+
+        /* CONTENT ARENA */
+        #mission-arena { height: 100vh; padding-bottom: 120px; }
+
+        /* SMART PANELS (Cards) */
+        .smart-card {
+            background-color: var(--bg-panel);
+            border-radius: 36px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-light);
+        }
+
+        /* BUTTONS */
+        .btn-green {
+            background: var(--accent-green); color: #EEF4F8; border-radius: 100px;
+            font-family: 'Quicksand', sans-serif; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.05em; transition: all 0.2s ease; border: none; cursor: pointer;
+            box-shadow: 0 8px 20px rgba(5, 150, 105, 0.2);
+        }
+        .btn-green:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(5, 150, 105, 0.3); background: #047857;}
+        .btn-green:active { transform: scale(0.96); }
+
+        .btn-blue {
+            background: var(--accent-blue); color: #EEF4F8; border-radius: 100px;
+            font-family: 'Quicksand', sans-serif; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.05em; transition: all 0.2s ease; border: none; cursor: pointer;
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.2);
+        }
+        .btn-blue:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(2, 132, 199, 0.3); background: #0369a1;}
+        .btn-blue:active { transform: scale(0.96); }
+
+        .btn-outline {
+            background: var(--bg-panel); border: 2px solid #CBD5E1; color: var(--text-main); border-radius: 100px;
+            font-family: 'Quicksand', sans-serif; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.05em; transition: all 0.2s ease; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        .btn-outline:hover { background: var(--bg-base); border-color: #94A3B8; transform: translateY(-2px); }
+
+        /* SLIDER (Thermostat vibe) */
+        input[type=range].cute-slider { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range].cute-slider:focus { outline: none; }
+        input[type=range].cute-slider::-webkit-slider-runnable-track { width: 100%; height: 12px; cursor: pointer; background: #CBD5E1; border-radius: 12px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+        input[type=range].cute-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 36px; width: 36px; border-radius: 50%; background: var(--bg-panel); cursor: pointer; margin-top: -12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.2s; border: 2px solid #94A3B8; }
+        input[type=range].cute-slider::-webkit-slider-thumb:hover { transform: scale(1.1); }
+
+        /* SMART CAMERAS (Flip Cards for Vocab) */
+        .smart-camera { perspective: 1000px; cursor: pointer; }
+        .smart-camera-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+        .smart-camera.flipped .smart-camera-inner { transform: rotateY(180deg); }
+        .smart-camera-front, .smart-camera-back {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem;
+            background-color: var(--bg-panel); border-radius: 28px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-light);
+        }
+        .smart-camera-front { padding-bottom: 2rem; overflow: hidden;}
+        .rec-dot { position: absolute; top: 20px; right: 20px; width: 10px; height: 10px; background: var(--accent-red); border-radius: 50%; animation: pulseRec 1.5s infinite; }
+        @keyframes pulseRec { 0% { opacity: 1; box-shadow: 0 0 0 0 rgba(220,38,38,0.4); } 70% { opacity: 0.5; box-shadow: 0 0 0 10px rgba(220,38,38,0); } 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(220,38,38,0); } }
+        
+        .smart-camera-front .icon-box { width: 140px; height: 140px; background: var(--bg-base); border-radius: 24px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; font-size: 5rem; color: var(--text-muted); transition: all 0.3s;}
+        .smart-camera:hover .icon-box { transform: scale(1.05); color: var(--text-main); }
+        .smart-camera-back { background: var(--text-main); color: var(--bg-panel); transform: rotateY(180deg); border: none; }
+
+        /* MCQ ROWS (Clean lists) */
+        .mcq-row {
+            background: var(--bg-panel); border: 2px solid transparent; border-radius: 20px; transition: all 0.2s ease;
+            cursor: pointer; display: flex; align-items: center; padding: 1.2rem 1.5rem; box-shadow: var(--shadow-soft);
+        }
+        .mcq-row:hover:not(.locked-check) { border-color: var(--accent-blue); transform: translateX(8px); background: #E1EFF6;}
+        .mcq-row.correct { background: #D1E7DD; border-color: var(--accent-green); color: var(--accent-green); }
+        .mcq-row.wrong { background: #F8D7DA; border-color: var(--accent-red); color: var(--accent-red); }
+
+        /* THE TUNER (iOS Toggle Style) */
+        .tuner-checkbox:checked + .tuner-label { background-color: var(--accent-green); border-color: var(--accent-green); }
+        .tuner-checkbox:checked + .tuner-label .tuner-knob { transform: translateX(100%); background-color: var(--bg-panel); box-shadow: -2px 0 5px rgba(0,0,0,0.1);}
+        .tuner-checkbox:not(:checked) + .tuner-label { background-color: #CBD5E1; border-color: #CBD5E1; }
+        .tuner-checkbox:not(:checked) + .tuner-label .tuner-knob { background-color: var(--bg-panel); box-shadow: 2px 0 5px rgba(0,0,0,0.1);}
+
+        /* THE FIXER & CLOZE (Bug words & Censored Blocks) */
+        .bug-word { color: var(--accent-red); border-bottom: 2px dashed var(--accent-red); cursor: pointer; font-weight: bold; transition: all 0.2s; padding: 2px 6px; border-radius: 6px; background: #F8D7DA;}
+        .bug-word:hover { background: #F1B0B7; }
+        .bug-fixed { color: var(--accent-green); pointer-events: none; font-weight: bold; border-bottom: 2px solid var(--accent-green); background: transparent; }
+
+        .censored-block { background-color: var(--text-main); color: var(--text-main); padding: 0 10px; cursor: pointer; transition: all 0.3s; font-family: 'JetBrains Mono', monospace; display: inline-block; line-height: 1.2; border-radius: 6px;}
+        .censored-block:hover { opacity: 0.8; }
+        .censored-block.revealed { background-color: #E1EFF6; color: var(--accent-blue); border-bottom: 3px solid var(--accent-blue); cursor: default; }
+
+        /* WORD BUILDER (Blocks) */
+        .wb-pill { background-color: var(--bg-panel); padding: 14px 28px; border-radius: 100px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-block; border: 1px solid #CBD5E1; box-shadow: 0 4px 10px rgba(0,0,0,0.03); font-family: 'Quicksand', sans-serif;}
+        .wb-pill:hover { background-color: var(--accent-blue); color: var(--bg-panel); transform: translateY(-4px); border-color: var(--accent-blue); box-shadow: 0 8px 20px rgba(2, 132, 199, 0.2);}
+        .wb-pill.used { opacity: 0; pointer-events: none; transform: scale(0.5); }
+        .wb-dropzone { min-height: 80px; border-bottom: 3px dashed #94A3B8; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center; padding: 15px; width: 100%; max-width: 800px; margin: 0 auto;}
+        .pill-in-zone { background-color: var(--accent-blue); color: var(--bg-panel); padding: 14px 28px; border-radius: 100px; font-weight: 700; cursor: default; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2); font-family: 'Quicksand', sans-serif;}
+
+        /* MATCH MAKER (Dashboard icons) */
+        .match-node { background: var(--bg-panel); border-radius: 20px; padding: 1.5rem; cursor: pointer; transition: all 0.2s; font-weight: 700; box-shadow: var(--shadow-soft); border: 2px solid transparent; text-align: center; }
+        .match-node:hover:not(.matched) { border-color: var(--accent-blue); transform: translateY(-3px); }
+        .match-node.active { border-color: var(--accent-blue); background: #E1EFF6; color: var(--accent-blue); }
+        .match-node.matched { background: var(--accent-green); color: var(--bg-panel); border-color: var(--accent-green); pointer-events: none; opacity: 0.9; }
+
+        /* CHAT SIMULATOR */
+        .chat-container { background: var(--bg-panel); border-radius: 2rem; border: 8px solid var(--bg-base); box-shadow: var(--shadow-soft); overflow: hidden; }
+        .chat-bubble-left { background: #E2E8F0; color: var(--text-main); padding: 1rem 1.4rem; border-radius: 1.5rem 1.5rem 1.5rem 0.4rem; align-self: flex-start; max-width: 80%; margin-bottom: 1rem; font-weight: 600;}
+        .chat-bubble-right { background: var(--accent-blue); color: #FFF; padding: 1rem 1.4rem; border-radius: 1.5rem 1.5rem 0.4rem 1.5rem; align-self: flex-end; max-width: 80%; margin-bottom: 1rem; font-weight: 600; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);}
+
+        /* ACTIVITY LOG (Reader) */
+        .log-item { display: flex; gap: 1rem; padding: 1.5rem; border-bottom: 1px solid var(--border-light); transition: background 0.2s; cursor: pointer; }
+        .log-item:hover { background: var(--bg-base); }
+        .log-item:last-child { border-bottom: none; }
+        .log-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-base); display: flex; align-items: center; justify-content: center; color: var(--accent-blue); flex-shrink: 0;}
+        .log-item.active-log { background: #E1EFF6; }
+
+        /* SPEAKING STARTERS */
+        .starter-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; opacity: 0; }
+        .starter-content.open { max-height: 300px; opacity: 1; margin-top: 1.5rem; }
+
+        /* FOOTER CONSOLE */
+        #nav-console {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: calc(100% - 48px); max-width: 900px;
+            background: rgba(238, 244, 248, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border-light); border-radius: 100px;
+            padding: 12px 30px; z-index: 5000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+        }
+
+        /* DRAWERS */
+        .drawer { background: var(--bg-panel); color: var(--text-main); border-left: 1px solid var(--border-light); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); z-index: 5100; box-shadow: -20px 0 50px rgba(0,0,0,0.08);}
+        .drawer.active { transform: translateX(0); }
+
+        .fade-in { animation: fadeIn 0.5s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+
+        /* EFFECTS */
+        #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(3px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-5px, 0, 0); } 40%, 60% { transform: translate3d(5px, 0, 0); } }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden text-base">
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- HUD SUPERIOR -->
+    <div id="hud-top" class="hidden justify-between items-center w-full">
+        <div class="flex items-center gap-10">
+            <div class="flex flex-col gap-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-display">System Power (HP)</span>
+                <div class="hud-bar-container"><div id="hp-bar" class="hud-bar-fill bg-[var(--accent-green)]" style="width: 100%;"></div></div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-display">Automation (XP)</span>
+                <div class="hud-bar-container"><div id="xp-bar" class="hud-bar-fill bg-[var(--accent-blue)]" style="width: 0%;"></div></div>
+            </div>
+        </div>
+        <div class="text-right flex items-center gap-6">
+            <button onclick="toggleTeacherHUD()" class="px-5 py-2 bg-[var(--bg-panel)] border border-slate-300 rounded-full text-[10px] uppercase tracking-widest text-[var(--accent-blue)] hover:bg-[var(--bg-base)] transition-all font-bold shadow-sm font-display"><i class="fas fa-microchip mr-2"></i>Admin</button>
+            <div>
+                <p class="font-display text-xl font-black text-[var(--text-main)] tracking-wide leading-none uppercase">WOLF LABS</p>
+                <p class="text-[9px] font-bold text-[var(--accent-green)] tracking-[0.3em] uppercase mt-1 font-display">Level A1 Sync</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL PRINCIPAL (CAPA) -->
+    <main id="dashboard" class="flex flex-col items-center relative px-8 pt-16 pb-48 z-10 w-full h-screen overflow-y-auto">
+        <button onclick="toggleFullscreen()" class="absolute top-6 right-8 text-slate-400 hover:text-slate-700 text-2xl z-50" title="Fullscreen"><i class="fas fa-expand"></i></button>
+        <div class="max-w-5xl w-full flex flex-col items-center text-center space-y-8 animate-in fade-in my-auto pb-10">
+            
+            <div class="smart-card p-6 mb-6 mt-10 border-t-4 border-[var(--accent-blue)] inline-block">
+                <div class="w-32 h-32 bg-[var(--bg-base)] rounded-[2rem] flex items-center justify-center overflow-hidden border border-blue-200 shadow-inner">
+                    <i class="fas fa-home text-6xl text-[var(--accent-blue)]"></i>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-[var(--accent-green)] font-bold text-xs tracking-[0.4em] uppercase bg-[#D1E7DD] px-5 py-2 rounded-full inline-block border border-[#A3CFBB] shadow-sm font-display"><i class="fas fa-wifi mr-2"></i> Connected</p>
+                <h1 class="text-6xl md:text-8xl font-black text-[var(--text-main)] leading-none tracking-tight font-display uppercase">THE SMART <br> <span class="text-[var(--accent-blue)]">HOME</span></h1>
+                <p class="text-xl text-[var(--text-muted)] font-medium mt-6 max-w-2xl mx-auto">Monitor the house, learn activity vocabulary, and master the Present Continuous (I am doing).</p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-3 mt-4 font-display">
+                <span class="px-4 py-1.5 bg-[var(--bg-panel)] border border-slate-300 text-[10px] font-bold uppercase tracking-widest text-slate-600 rounded-full shadow-sm">Home Vocab</span>
+                <span class="px-4 py-1.5 bg-[#E1EFF6] border border-[#B6D6E9] text-[10px] font-bold uppercase tracking-widest text-[var(--accent-blue)] rounded-full">I am doing</span>
+                <span class="px-4 py-1.5 bg-[#D1E7DD] border border-[#A3CFBB] text-[10px] font-bold uppercase tracking-widest text-[var(--accent-green)] rounded-full">He / She is doing</span>
+            </div>
+            
+            <button onclick="startMission()" class="mt-10 btn-blue px-16 py-5 text-lg mb-10">
+                Open Dashboard
+            </button>
+        </div>
+    </main>
+
+    <!-- ARENA DE CONTEÚDO DA LIÇÃO -->
+    <main id="mission-arena" class="hidden flex-grow flex-col overflow-hidden relative mt-16">
+        <div id="mission-content" class="flex-grow overflow-y-auto px-6 py-12 flex flex-col items-center w-full"></div>
+    </main>
+
+    <!-- CONSOLA DE NAVEGAÇÃO -->
+    <footer id="nav-console" class="hidden flex justify-between items-center w-full font-display">
+        <div class="flex items-center gap-6 w-1/4">
+            <button onclick="goHome()" class="text-slate-400 hover:text-[var(--accent-red)] transition-colors"><i class="fas fa-power-off text-xl"></i></button>
+            <div class="flex flex-col">
+                <span id="console-title" class="text-[12px] font-black text-[var(--text-main)] uppercase tracking-widest truncate">A1</span>
+                <span id="console-type" class="text-[9px] font-bold text-[var(--accent-blue)] uppercase tracking-widest">Dashboard</span>
+            </div>
+        </div>
+        <div class="flex flex-col items-center gap-4 w-1/2">
+            <div class="flex items-center gap-12">
+                <button onclick="prevStep()" class="text-slate-400 hover:text-slate-700 transition-colors"><i class="fas fa-chevron-left text-2xl"></i></button>
+                <span id="console-counter" class="text-[10px] font-bold text-slate-500 tracking-[0.4em] uppercase">PANEL 01</span>
+                <button onclick="nextStep()" class="text-slate-400 hover:text-[var(--accent-blue)] hover:scale-110 transition-all"><i class="fas fa-chevron-right text-2xl"></i></button>
+            </div>
+            <div class="w-64 h-1.5 bg-slate-300 rounded-full overflow-hidden border border-slate-300">
+                <div id="progress-bar" class="h-full bg-[var(--accent-blue)] transition-all duration-300" style="width: 0%;"></div>
+            </div>
+        </div>
+        <div class="flex items-center justify-end gap-6 w-1/4">
+            <button onclick="toggleWhiteboard()" class="text-slate-400 hover:text-[var(--accent-blue)] transition-colors" title="System Logs"><i class="fas fa-clipboard-list text-xl"></i></button>
+            <button onclick="toggleFullscreen()" class="text-slate-400 hover:text-slate-700 transition-colors" title="Fullscreen"><i class="fas fa-expand text-xl"></i></button>
+            <button onclick="toggleLessonNavigator()" class="text-slate-400 hover:text-[var(--accent-blue)] transition-colors" title="Menu"><i class="fas fa-th-large text-xl"></i></button>
+        </div>
+    </footer>
+
+    <!-- GAVETAS LATERAIS (DRAWERS) -->
+    <aside id="whiteboard" class="fixed right-0 top-0 h-screen w-[450px] drawer flex flex-col pt-24 z-[5100]">
+        <div class="p-8 border-b border-slate-200 flex justify-between items-center bg-[var(--bg-panel)]">
+            <h2 class="font-display text-2xl font-black text-[var(--text-main)] tracking-tight"><i class="fas fa-clipboard-list text-[var(--accent-blue)] mr-3"></i>System Notes</h2>
+            <button onclick="toggleWhiteboard()" class="text-slate-400 hover:text-slate-700"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <div class="p-4 bg-[var(--bg-base)] flex flex-wrap gap-2 border-b border-slate-200 font-display">
+            <button onclick="insertTag('[ACTION]')" class="text-[10px] bg-[var(--bg-panel)] border border-slate-300 text-slate-600 px-3 py-1.5 rounded-full hover:bg-[var(--accent-blue)] hover:text-white transition-all font-bold uppercase tracking-widest shadow-sm">Action</button>
+            <button onclick="insertTag('[GRAMMAR]')" class="text-[10px] bg-[var(--bg-panel)] border border-slate-300 text-slate-600 px-3 py-1.5 rounded-full hover:bg-[var(--accent-green)] hover:text-white transition-all font-bold uppercase tracking-widest shadow-sm">Grammar</button>
+        </div>
+        <textarea id="wb-text" class="flex-grow bg-[var(--bg-base)] text-[var(--text-main)] p-8 resize-none focus:outline-none font-handwriting text-2xl leading-relaxed" placeholder="Type custom automation notes here..."></textarea>
+    </aside>
+
+    <aside id="lesson-navigator" class="fixed right-0 top-0 h-screen w-80 drawer flex flex-col pt-24 z-[5100]">
+        <div class="p-8 border-b border-slate-200 text-[var(--text-main)] font-bold uppercase tracking-widest flex justify-between items-center text-sm font-display bg-[var(--bg-panel)]">All Panels <button onclick="toggleLessonNavigator()"><i class="fas fa-times text-slate-400 hover:text-slate-700"></i></button></div>
+        <div id="nav-steps-list" class="flex-grow overflow-y-auto p-4 space-y-2 bg-[var(--bg-base)] font-display"></div>
+    </aside>
+
+    <aside id="teacher-hud" class="fixed right-0 top-0 h-screen w-[350px] drawer flex flex-col pt-24 z-[5100]">
+        <div class="p-8 border-b border-slate-200 flex justify-between items-center bg-[var(--bg-panel)]">
+            <h2 class="font-display text-2xl font-black text-[var(--accent-blue)] tracking-tight uppercase"><i class="fas fa-microchip mr-2"></i> Admin</h2>
+            <button onclick="toggleTeacherHUD()"><i class="fas fa-times text-xl text-slate-400 hover:text-slate-700"></i></button>
+        </div>
+        <div class="flex-grow overflow-y-auto p-8 space-y-8 bg-[var(--bg-base)]">
+            <div class="bg-[#E1EFF6] p-6 rounded-2xl border border-[#B6D6E9] shadow-sm">
+                <p class="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-widest mb-3 font-display">Module Goal</p>
+                <p class="text-sm text-[var(--text-muted)] leading-relaxed">Level A1. Teach the Present Continuous (I am doing, He is doing). Vocabulary focused on actions happening right now at home (cooking, sleeping, watching TV).</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 font-display">System Alerts</p>
+                <div class="space-y-3 font-display">
+                    <button onclick="triggerPraise('VERIFIED', 'Great speaking.')" class="w-full py-4 bg-[var(--bg-panel)] text-[var(--accent-blue)] border border-slate-300 rounded-xl font-bold text-xs hover:bg-[var(--accent-blue)] hover:text-white transition-all tracking-widest shadow-sm uppercase">SEND: BLUE (GOOD)</button>
+                    <button onclick="triggerPraise('PERFECT', 'Flawless grammar.')" class="w-full py-4 bg-[var(--bg-panel)] text-[var(--accent-green)] border border-slate-300 rounded-xl font-bold text-xs hover:bg-[var(--accent-green)] hover:text-white transition-all tracking-widest shadow-sm uppercase">SEND: GREEN (GREAT)</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay de Elogio -->
+    <div id="praise-overlay" class="fixed inset-0 z-[6000] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div id="praise-card" class="smart-card p-16 rounded-[3rem] text-center transform scale-50 transition-transform duration-500 border-4">
+            <h2 id="praise-main" class="font-display text-6xl md:text-8xl font-black tracking-tighter uppercase mb-4 drop-shadow-sm"></h2>
+            <p id="praise-sub" class="text-xl font-bold tracking-widest uppercase mt-6 opacity-80 text-[var(--text-muted)] font-display"></p>
+        </div>
+    </div>
+
+    <!-- SCRIPT DO MOTOR PRINCIPAL -->
+    <script>
+        // --- ESTADO DO SISTEMA ---
+        let state = { hp: 100, xp: 0, current: 0 };
+        const esc = (s) => s ? s.replace(/'/g, "\\'").replace(/"/g, "&quot;") : "";
+        
+        const TYPES = { COVER: "Intro", WARMUP: "Status", VIDEO: "Cam Feed", VOCAB: "Cameras", GRAMMAR: "Logic", DRILL: "Diagnostics", TUNER: "Modes", BUILDER: "Command", READER: "Logs", SPEAKING: "Voice", WRAP: "End" };
+
+        function step(type, title, html) { return { type, title, html }; }
+
+        function updateHUD() {
+            const h = document.getElementById('hp-bar'); if(h) h.style.width = Math.max(0, state.hp) + '%';
+            // XP Max is scaled for exactly 25 pages
+            const x = document.getElementById('xp-bar'); if(x) x.style.width = Math.min(100, (state.xp / 65) * 100) + '%';
+        }
+
+        function insertTag(tag) { 
+            const text = document.getElementById('wb-text'); 
+            if (text) { text.value += (text.value.length > 0 ? '\n' : '') + tag + ' '; text.focus(); } 
+        }
+
+        // --- TEMPLATES TEMÁTICOS (THE SMART HOME) ---
+        
+        const bGuide = (title, points) => step(TYPES.COVER, title, `
+            <div class="max-w-4xl mx-auto space-y-10 animate-in fade-in py-10">
+                <div class="smart-card border-l-8 border-[var(--accent-blue)]">
+                    <p class="text-[var(--accent-blue)] font-bold uppercase tracking-[0.4em] text-[10px] mb-6 flex items-center gap-3 font-display">
+                        <i class="fas fa-home text-lg"></i> WOLF LABS | Home Setup
+                    </p>
+                    <h2 class="font-display text-4xl md:text-5xl font-black text-[var(--text-main)] tracking-tight leading-none mb-10 pb-8 border-b border-slate-100 uppercase">${title}</h2>
+                    <div class="space-y-6">
+                        ${points.map(p => `<p class="text-xl text-[var(--text-muted)] font-medium leading-relaxed flex items-start gap-4"><i class="fas fa-check-circle text-[var(--accent-green)] text-[16px] mt-1.5 opacity-80"></i> ${p}</p>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `);
+
+        const bSlider = (title, prompt, optA, optB, starter) => step(TYPES.WARMUP, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-12 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-[0.4em] mb-2 bg-[var(--bg-panel)] px-5 py-2 rounded-full border border-slate-300 shadow-sm font-display">Home Mode</p>
+                <h2 class="font-display text-4xl md:text-5xl font-black text-[var(--text-main)] tracking-tight leading-tight">${prompt}</h2>
+                
+                <div class="w-full max-w-3xl smart-card py-16 flex flex-col items-center mt-8">
+                    <div class="flex justify-between w-full px-8 mb-12 text-5xl">
+                        <span class="opacity-80 hover:opacity-100 hover:text-[var(--accent-blue)] transition-all hover:scale-110 drop-shadow-sm cursor-pointer" title="Lazy"><i class="fas fa-couch text-[var(--text-muted)]"></i></span>
+                        <span class="opacity-80 hover:opacity-100 hover:text-[var(--accent-green)] transition-all hover:scale-110 drop-shadow-sm cursor-pointer" title="Active"><i class="fas fa-running text-[var(--accent-green)]"></i></span>
+                    </div>
+                    <div class="w-full px-12 relative">
+                        <input type="range" min="0" max="100" value="50" class="cute-slider">
+                    </div>
+                    <div class="flex justify-between w-full px-8 mt-12 text-xs font-bold text-slate-500 uppercase tracking-widest font-display">
+                        <span class="text-[var(--text-muted)]">${optA}</span>
+                        <span class="text-[var(--accent-green)]">${optB}</span>
+                    </div>
+                </div>
+
+                <div class="w-full max-w-3xl p-8 mt-8 text-left border-l-4 border-[var(--accent-blue)] bg-[var(--bg-panel)] rounded-2xl shadow-sm border-y border-r border-slate-200">
+                    <p class="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-widest mb-4 font-display">Voice Command</p>
+                    <p class="text-xl font-bold text-[var(--text-main)] mb-2">Tell your teacher about your day.</p>
+                    <p class="text-2xl font-bold text-slate-500 mt-4 font-handwriting">"${starter}"</p>
+                </div>
+            </div>
+        `);
+
+        // Smart Cameras (Flip Cards for Vocab) - INCREASED SIZE & CLICKEABLE FIX
+        function bSmartCameras(title, cameras) {
+            const nodesHtml = cameras.map(c => `
+                <div class="smart-camera w-[320px] sm:w-[340px] h-[440px]" onclick="this.classList.toggle('flipped')">
+                    <div class="smart-camera-inner">
+                        <div class="smart-camera-front">
+                            <div class="rec-dot"></div>
+                            <div class="icon-box w-[140px] h-[140px] text-5xl">
+                                <i class="${c.icon}"></i>
+                            </div>
+                            <span class="font-display font-black text-[var(--text-main)] text-3xl mt-4 tracking-wide uppercase">${c.room}</span>
+                            <span class="text-xs text-[var(--accent-blue)] mt-auto tracking-widest uppercase font-bold"><i class="fas fa-hand-pointer mr-1"></i> Tap to View</span>
+                        </div>
+                        <div class="smart-camera-back">
+                            <p class="text-[var(--bg-base)] text-xs font-bold uppercase tracking-widest mb-4 border-b border-white/20 pb-3 w-full text-center font-display">Action Detected</p>
+                            <p class="text-[var(--bg-panel)] text-4xl font-black mb-8 leading-tight font-display uppercase tracking-wide">${c.action}</p>
+                            <div class="mt-auto w-full bg-black/20 p-6 rounded-2xl text-left border border-white/10">
+                                <p class="text-green-200 font-bold text-[10px] uppercase tracking-widest mb-3 font-display">Communicate</p>
+                                <p class="text-white text-base font-bold mb-3 leading-tight">${c.q}</p>
+                                <p class="text-white/90 italic font-handwriting text-2xl leading-none">"${c.starter}"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            return step(TYPES.VOCAB, title, `
+                <div class="max-w-6xl mx-auto flex flex-col items-center py-10 animate-in fade-in">
+                    <div class="text-center mb-12">
+                        <p class="text-[10px] font-bold text-[var(--accent-red)] uppercase tracking-[0.4em] mb-4 bg-[#F8D7DA] inline-block px-5 py-2 rounded-full border border-red-200 shadow-sm font-display"><i class="fas fa-video mr-2"></i> Live Feed</p>
+                        <h2 class="font-display text-5xl font-black text-[var(--text-main)] tracking-tight">${title}</h2>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-10">
+                        ${nodesHtml}
+                    </div>
+                </div>
+            `);
+        }
+
+        const bVideo = (title, videoId, instruction, start=0, end=0) => {
+            let timeStr = `?start=${start}`;
+            if(end > 0) timeStr += `&end=${end}`;
+            return step(TYPES.VIDEO, title, `
+            <div class="max-w-5xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--bg-panel)] uppercase tracking-[0.4em] mb-6 border border-red-500 px-5 py-2 rounded-full bg-[var(--accent-red)] shadow-sm font-display animate-pulse"><i class="fas fa-circle mr-2 text-[8px]"></i> Recording</p>
+                <h2 class="font-display text-4xl md:text-5xl font-black text-[var(--text-main)] tracking-tight mb-8 text-center">${title}</h2>
+                <p class="text-[var(--text-muted)] text-xl font-bold mb-12 text-center max-w-2xl">${instruction}</p>
+                
+                <div class="w-full smart-card p-4 md:p-8 flex flex-col items-center border-t-2 border-[var(--accent-red)]">
+                    <div class="w-full aspect-video bg-black border border-slate-300 shadow-xl relative overflow-hidden rounded-2xl">
+                        <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${videoId}${timeStr}&rel=0" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+            `);
+        };
+
+        const bGrammar = (title, rule, examples, tagColor="var(--accent-blue)") => step(TYPES.GRAMMAR, title, `
+            <div class="max-w-5xl mx-auto space-y-10 animate-in fade-in py-10">
+                <div class="text-center space-y-4 mb-16">
+                    <p class="text-[10px] font-bold text-[var(--bg-panel)] uppercase tracking-[0.5em] mb-4 inline-block px-5 py-2 rounded-full shadow-sm font-display" style="background-color: ${tagColor}">System Logic</p>
+                    <h2 class="font-display text-5xl md:text-6xl font-black text-[var(--text-main)] tracking-tight">${title}</h2>
+                </div>
+                <div class="smart-card mb-12 border-l-8" style="border-left-color: ${tagColor}">
+                    <p class="text-2xl text-[var(--text-main)] font-medium leading-relaxed">${rule.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}" class="font-black">$1</span>`)}</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    ${examples.map(ex => `
+                        <div class="bg-[var(--bg-panel)] border border-slate-200 p-10 rounded-[2rem] shadow-sm text-center hover:shadow-md transition-shadow">
+                            <p class="text-[10px] font-bold uppercase text-slate-500 tracking-widest mb-6 font-display">${ex.context}</p>
+                            <p class="text-3xl font-black text-[var(--text-main)] leading-tight font-display">"${ex.text.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}">$1</span>`)}"</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `);
+
+        const bTuner = (id, title, instruction, textAff, textAlt, feedback, tagColor="var(--accent-green)") => step(TYPES.TUNER, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-12 animate-in fade-in">
+                <p class="text-[10px] font-bold text-white uppercase tracking-[0.4em] mb-2 px-5 py-2 rounded-full shadow-sm font-display" style="background-color: ${tagColor}">Smart Mode</p>
+                <h2 class="font-display text-5xl font-black text-[var(--text-main)] tracking-tight leading-tight">${title}</h2>
+                <p class="text-xl text-[var(--text-muted)] font-medium max-w-2xl">${instruction}</p>
+                
+                <div class="w-full max-w-3xl smart-card flex flex-col items-center py-16 border-t-4" style="border-top-color: ${tagColor}">
+                    <div class="flex items-center gap-8 mb-16">
+                        <span class="font-bold text-[var(--text-main)] tracking-widest text-lg w-32 text-right uppercase font-display" id="mode-aff-${id}">Off</span>
+                        <div class="relative inline-block w-24 h-12 align-middle select-none">
+                            <input type="checkbox" id="tuner-switch-${id}" class="tuner-checkbox absolute block w-6 h-6 rounded-full opacity-0 z-10 w-full h-full cursor-pointer" onchange="toggleTuner('${id}', this, '${esc(textAff)}', '${esc(textAlt)}', '${esc(feedback)}', '${tagColor}')">
+                            <label for="tuner-switch-${id}" class="tuner-label block overflow-hidden h-12 rounded-full bg-slate-300 border-2 border-slate-300 cursor-pointer transition-colors duration-300">
+                                <span class="tuner-knob absolute block w-10 h-10 m-0.5 bg-[var(--bg-panel)] rounded-full transition-transform duration-300 ease-in-out shadow-sm"></span>
+                            </label>
+                        </div>
+                        <span class="font-bold text-slate-400 tracking-widest text-lg w-32 text-left uppercase font-display" id="mode-alt-${id}">On</span>
+                    </div>
+
+                    <div class="bg-[var(--bg-base)] w-full p-10 rounded-[2rem] flex items-center justify-center min-h-[140px] border border-slate-200 shadow-inner">
+                        <p id="tuner-text-${id}" class="text-3xl font-black tracking-wide transition-opacity duration-300 font-display text-[var(--text-main)] leading-relaxed">${textAff.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}">$1</span>`)}</p>
+                    </div>
+                    
+                    <div id="tuner-fb-${id}" class="hidden mt-10 font-bold text-lg font-inter text-slate-500">
+                        ${feedback}
+                    </div>
+                </div>
+            </div>
+        `);
+
+        function bWordBuilder(id, title, instruction, expectedArr) {
+            const expectedStr = JSON.stringify(expectedArr).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            let wordBtns = shuffleArray([...expectedArr]).map(w => `<span class="wb-pill text-xl font-display" onclick="moveWbWord(this, '${esc(w)}', '${id}')">${w}</span>`).join('');
+            return step(TYPES.BUILDER, title, `
+                <div class="max-w-4xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in" data-expected="${expectedStr}" id="wb-data-${id}">
+                    <p class="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-[0.4em] mb-4 bg-[#E1EFF6] px-5 py-2 rounded-full border border-blue-200 shadow-sm font-display">Custom Routine</p>
+                    <h2 class="font-display text-4xl md:text-5xl font-black text-[var(--text-main)] tracking-tight mb-8 text-center">${title}</h2>
+                    <p class="text-[var(--text-muted)] font-medium text-xl mb-12 text-center">${instruction}</p>
+                    
+                    <div class="w-full smart-card text-center pb-12">
+                        <div class="wb-dropzone text-2xl text-[var(--text-main)] font-display" id="wb-dropzone-${id}"></div>
+                        <div class="flex justify-center flex-wrap gap-4 mt-12" id="wb-bank-${id}">
+                            ${wordBtns}
+                        </div>
+                        <button onclick="resetWb('${id}')" class="mt-12 text-xs font-bold text-slate-500 hover:text-[var(--accent-blue)] uppercase tracking-widest transition font-display"><i class="fas fa-undo mr-2"></i>Reset Command</button>
+                    </div>
+                    <div id="wb-fb-${id}" class="hidden mt-8 p-6 bg-[var(--accent-green)] text-[var(--bg-panel)] font-bold font-display text-2xl rounded-full shadow-lg">Routine Saved!</div>
+                </div>
+            `);
+        }
+
+        const bMCQ = (id, title, prompt, options, correctIdx, followup, starter) => step(TYPES.DRILL, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-[0.4em] mb-2 bg-[#E1EFF6] px-5 py-2 rounded-full border border-blue-200 shadow-sm font-display">System Check</p>
+                <h2 class="font-display text-4xl md:text-5xl font-black text-[var(--text-main)] tracking-tight leading-tight">${prompt}</h2>
+                
+                <div class="w-full max-w-2xl space-y-4 mt-8" id="quiz-options-${id}">
+                    ${options.map((opt, i) => `
+                        <div class="mcq-row locked-check" onclick="handleQuizTrial('${id}', this, ${i === correctIdx}, '${esc(followup)}', '${esc(starter)}')">
+                            <div class="w-12 h-12 rounded-full border border-slate-300 bg-[var(--bg-base)] flex items-center justify-center text-lg font-bold text-slate-500 mr-5 font-display">${String.fromCharCode(65 + i)}</div>
+                            <span class="text-xl font-bold text-[var(--text-main)] text-left font-inter">${opt}</span>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div id="followup-box-${id}" class="hidden w-full max-w-2xl p-8 mt-8 text-left bg-[var(--bg-panel)] border-l-4 border-[var(--accent-green)] rounded-2xl shadow-sm border-y border-r border-slate-200">
+                    <p class="text-[10px] font-bold text-[var(--accent-green)] uppercase tracking-widest mb-4 font-display">Assistant Follow-up</p>
+                    <p class="text-xl font-bold text-[var(--text-main)] mb-4">${followup}</p>
+                    ${starter ? `<p class="text-2xl font-bold text-slate-500 font-handwriting">"${starter}"</p>` : ''}
+                </div>
+            </div>
+        `);
+
+        function bMatchMaker(title, instruction, pairs) {
+            let lefts = pairs.map((p, i) => ({text: p.left, id: i, type: 'L'}));
+            let rights = pairs.map((p, i) => ({text: p.right, id: i, type: 'R'}));
+            for (let i = lefts.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [lefts[i], lefts[j]] = [lefts[j], lefts[i]]; }
+            for (let i = rights.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rights[i], rights[j]] = [rights[j], rights[i]]; }
+
+            const buildNodes = (arr) => arr.map(item => `
+                <div class="match-node font-display text-xl text-[var(--text-main)]" data-id="${item.id}" data-type="${item.type}" onclick="handleMatch(this)">
+                    ${item.text}
+                </div>
+            `).join('');
+
+            return step(TYPES.DRILL, title, `
+                <div class="max-w-5xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in">
+                    <p class="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-[0.4em] mb-6 font-display bg-[#E1EFF6] px-5 py-2 rounded-full border border-blue-200 shadow-sm">Dashboard Assign</p>
+                    <h2 class="font-display text-5xl font-black text-[var(--text-main)] tracking-tight mb-8 text-center">${title}</h2>
+                    <p class="text-slate-500 text-lg font-medium mb-12 text-center">${instruction}</p>
+                    
+                    <div class="w-full max-w-4xl grid grid-cols-2 gap-16 relative" id="match-board">
+                        <div class="flex flex-col gap-5" id="match-left">${buildNodes(lefts)}</div>
+                        <div class="flex flex-col gap-5" id="match-right">${buildNodes(rights)}</div>
+                    </div>
+                    <div id="match-hub" class="hidden mt-12 text-[var(--bg-panel)] font-display font-black text-2xl bg-[var(--accent-green)] p-6 rounded-full shadow-lg px-12">All Assigned!</div>
+                </div>
+            `);
+        }
+
+        const bBamboozle = (title, statement1, statement2) => step(TYPES.DRILL, title, `
+            <div class="max-w-5xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-white uppercase tracking-[0.4em] mb-6 border border-blue-300 px-5 py-2 rounded-full bg-[var(--accent-blue)] shadow-sm font-display">Rule Check</p>
+                <h2 class="font-display text-5xl font-black text-[var(--text-main)] tracking-tight mb-16 text-center">${title}</h2>
+                
+                <div id="bamb-q1" class="w-full max-w-4xl smart-card text-center mb-8 border-t-4 border-[var(--accent-blue)]">
+                    <p class="text-3xl font-black text-[var(--text-main)] leading-relaxed font-display mb-12">${statement1.text.replace(/\[(.*?)\]/g, '<span class="text-[var(--accent-blue)]">$1</span>')}</p>
+                    <div class="flex gap-6 justify-center">
+                        <button class="btn-blue px-12 py-5 text-lg" onclick="checkBamb(1, ${statement1.isTrue})">TRUE (YES)</button>
+                        <button class="btn-outline px-12 py-5 text-lg" onclick="checkBamb(1, ${!statement1.isTrue})">FALSE (NO)</button>
+                    </div>
+                </div>
+                
+                <div id="bamb-q2" class="hidden w-full max-w-4xl smart-card text-center mb-8 border-t-4 border-[var(--accent-green)]">
+                    <p class="text-3xl font-black text-[var(--text-main)] leading-relaxed font-display mb-12">${statement2.text.replace(/\[(.*?)\]/g, '<span class="text-[var(--accent-green)]">$1</span>')}</p>
+                    <div class="flex gap-6 justify-center">
+                        <button class="btn-green px-12 py-5 text-lg" onclick="checkBamb(2, ${statement2.isTrue})">TRUE (YES)</button>
+                        <button class="btn-outline px-12 py-5 text-lg" style="border-color: var(--accent-green); color: var(--accent-green)" onclick="checkBamb(2, ${!statement2.isTrue})">FALSE (NO)</button>
+                    </div>
+                </div>
+                
+                <div id="bamb-fb" class="hidden mt-8 p-6 bg-[var(--accent-green)] text-[var(--bg-panel)] font-black text-2xl font-display text-center rounded-full shadow-lg px-12">Perfect logic!</div>
+            </div>
+        `);
+
+        const bFixer = (title, codeLines, expectedFixes) => {
+            let expectedFixesCopy = [...expectedFixes]; 
+            let htmlLines = codeLines.map((line, i) => {
+                return line.replace(/\[(.*?)\]/g, (match, word) => {
+                    const fixData = expectedFixesCopy.shift();
+                    return `<span class="bug-word" onclick="triggerFixer(this, '${esc(fixData)}')">${word}</span>`;
+                });
+            }).join('<br><br>');
+
+            return step(TYPES.DRILL, title, `
+                <div class="max-w-4xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in">
+                    <p class="text-[10px] font-bold text-[var(--accent-red)] uppercase tracking-[0.4em] mb-4 bg-[#F8D7DA] px-5 py-2 rounded-full border border-red-200 shadow-sm font-display animate-pulse">Auto-Caption Error</p>
+                    <h2 class="font-display text-4xl md:text-5xl font-black text-[var(--text-main)] tracking-tight mb-8 text-center">${title}</h2>
+                    <p class="text-slate-600 text-xl mb-12 text-center font-medium">The camera captions have grammar bugs. Click the <span class="text-[var(--accent-red)] bg-[#F8D7DA] px-2 py-1 rounded-md font-bold">red words</span> to fix them.</p>
+                    
+                    <div class="w-full smart-card relative overflow-hidden text-2xl leading-relaxed text-[var(--text-main)] font-display border-t-4 border-[var(--accent-red)]">
+                        <div class="font-bold p-6">
+                            ${htmlLines}
+                        </div>
+                        
+                        <div id="fix-panel" class="absolute bottom-0 left-0 w-full bg-[#E1EFF6] border-t border-slate-300 p-8 transform translate-y-full transition-transform duration-300 flex items-center gap-6 z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+                            <span class="text-[var(--accent-green)] font-bold text-lg uppercase tracking-widest font-display">Correction:</span>
+                            <input type="text" id="fix-input" class="bg-[var(--bg-panel)] text-[var(--text-main)] border-2 border-slate-300 rounded-full px-6 py-4 flex-1 text-2xl focus:outline-none focus:border-[var(--accent-green)] font-bold" autocomplete="off" placeholder="Type here...">
+                            <button onclick="submitFixer()" class="btn-green px-10 py-4 text-lg">Update</button>
+                        </div>
+                    </div>
+                    <div id="fixer-hub" class="hidden mt-10 text-[var(--bg-panel)] font-display font-black text-2xl bg-[var(--accent-green)] px-8 py-4 rounded-full shadow-md">Captions updated!</div>
+                </div>
+            `);
+        }
+
+        // NEW EXERCISE: The Chat Simulator (Family Group) - HEIGHT FIXED
+        const bChat = (id, title, instruction, msgs, question, options, correctIdx) => step(TYPES.READER, title, `
+            <div class="max-w-5xl mx-auto flex flex-col items-center py-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-[0.4em] mb-4 bg-[#E1EFF6] px-5 py-2 rounded-full border border-blue-200 shadow-sm font-display"><i class="fas fa-comment-dots mr-2"></i> Family Group Chat</p>
+                <h2 class="font-display text-4xl md:text-5xl font-black text-[var(--text-main)] tracking-tight uppercase mb-4 text-center">${title}</h2>
+                <p class="text-[var(--text-muted)] mb-10 text-center text-lg font-medium">${instruction}</p>
+                
+                <div class="w-full flex flex-col md:flex-row gap-8 items-center justify-center">
+                    
+                    <!-- CHAT MOCKUP -->
+                    <div class="w-full md:w-1/2 flex flex-col bg-[var(--bg-panel)] border-8 border-[var(--bg-base)] rounded-[2rem] shadow-sm overflow-hidden h-[500px]">
+                        <div class="bg-[var(--bg-base)] p-4 border-b border-slate-200 flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[var(--accent-blue)] shadow-sm"><i class="fas fa-users text-xl"></i></div>
+                            <div><p class="font-bold text-sm text-[var(--text-main)] font-display">Home Network</p><p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">3 Members</p></div>
+                        </div>
+                        <div class="flex-1 p-6 bg-[var(--bg-panel)] flex flex-col gap-4 overflow-y-auto pb-8">
+                            ${msgs.map(m => `
+                                <div class="${m.s === 'A' ? 'self-end bg-[var(--accent-blue)] text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-sm' : 'self-start bg-[#E2E8F0] border border-slate-200 text-[var(--text-main)] rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm'} p-4 max-w-[85%] shadow-sm text-sm font-medium">
+                                    <p class="text-[10px] opacity-70 mb-1 font-bold">${m.name}</p>
+                                    ${m.t}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- MCQ AREA -->
+                    <div class="w-full md:w-1/2 bg-[var(--bg-panel)] p-8 rounded-[2rem] shadow-sm border border-slate-200">
+                        <p class="font-display text-2xl font-black text-[var(--text-main)] mb-6 text-center">${question}</p>
+                        <div class="space-y-4" id="opts-chat-${id}">
+                            ${options.map((opt, i) => `
+                                <div class="mcq-row locked-check" onclick="handleQuizTrial('chat-${id}', this, ${i === correctIdx}, '', '')">
+                                    <div class="w-10 h-10 rounded-full border border-slate-200 bg-[var(--bg-base)] flex items-center justify-center text-sm font-bold text-slate-500 mr-4 shrink-0 font-display">${String.fromCharCode(65 + i)}</div>
+                                    <span class="text-base font-medium text-[var(--text-main)] text-left">${opt}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div id="followup-box-chat-${id}" class="hidden mt-6 bg-[#D1E7DD] px-6 py-4 rounded-xl border border-[#A3CFBB] font-display font-bold text-green-700 text-center">Correct interpretation!</div>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        // NEW EXERCISE: System Diagnostic (Cloze / Fill in the blanks)
+        const bSystemDiagnostic = (title, text, expectedFixes) => {
+            let expectedFixesCopy = [...expectedFixes];
+            let htmlText = text.replace(/\[(.*?)\]/g, (match, word) => {
+                const fixData = expectedFixesCopy.shift();
+                return `<span class="censored-block" onclick="revealCensored(this, '${esc(fixData)}')">████</span>`;
+            });
+            
+            return step(TYPES.DRILL, title, `
+                <div class="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] space-y-10 animate-in fade-in">
+                    <p class="text-[10px] font-bold text-[var(--accent-red)] uppercase tracking-[0.4em] mb-2 font-code bg-[#F8D7DA] px-4 py-1.5 rounded-full border border-red-200 shadow-sm animate-pulse">Data Corrupted</p>
+                    <h2 class="text-4xl md:text-5xl font-black text-[var(--text-main)] tracking-tight leading-tight font-display uppercase text-center">${title}</h2>
+                    <p class="text-slate-600 text-center font-bold text-lg">Click the black blocks to restore the missing verbs.</p>
+                    
+                    <div class="smart-card w-full p-10 text-left border-t-4 border-[var(--accent-blue)]">
+                        <p class="font-code text-xs text-slate-400 mb-6 border-b border-slate-200 pb-2 uppercase tracking-widest">> DIAGNOSTIC LOG</p>
+                        <p class="text-2xl text-[var(--text-main)] leading-loose font-code">
+                            ${htmlText}
+                        </p>
+                    </div>
+                    <div id="censored-fb" class="hidden text-[var(--bg-panel)] bg-[var(--accent-green)] px-6 py-3 rounded-full font-code text-sm font-bold uppercase tracking-widest text-center">> ALL DATA RESTORED.</div>
+                </div>
+            `);
+        }
+
+        const bRoleplay = (title, prompt, hint) => step(TYPES.SPEAKING, title, `
+            <div class="max-w-4xl mx-auto w-full flex flex-col items-center justify-center min-h-[60vh] text-center animate-in fade-in py-10 relative">
+                <div class="w-32 h-32 bg-[#E1EFF6] border border-blue-200 rounded-full flex items-center justify-center mb-8 shadow-lg"><i class="fas fa-microphone text-6xl text-[var(--accent-blue)]"></i></div>
+                <p class="text-[10px] font-bold text-[var(--bg-panel)] uppercase tracking-[0.4em] mb-4 bg-[var(--accent-blue)] px-5 py-2 rounded-full shadow-sm font-display">Voice Assistant</p>
+                <h2 class="font-display text-5xl md:text-6xl font-black tracking-tight text-[var(--text-main)] leading-tight mb-12">${prompt}</h2>
+                
+                <div class="w-full smart-card text-left border-l-4 border-[var(--accent-green)]">
+                    <div class="flex justify-between items-center cursor-pointer" onclick="toggleStarter(this)">
+                        <div class="flex items-center gap-4">
+                            <i class="fas fa-lightbulb text-[var(--accent-green)] text-3xl"></i>
+                            <span class="font-bold text-[var(--text-main)] tracking-widest uppercase text-xl font-display">Assistant Prompts (Click)</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-slate-400"></i>
+                    </div>
+                    <div class="starter-content text-left">
+                        <div class="bg-[var(--bg-base)] p-8 rounded-2xl mt-6 border border-slate-200">
+                            <p class="text-2xl font-medium text-slate-600 leading-relaxed font-handwriting">"${hint}"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        const bWrap = () => step(TYPES.WRAP, "System Offline", `
+            <div class="text-center max-w-3xl mx-auto flex flex-col items-center justify-center min-h-[60vh] animate-in fade-in">
+                <div class="w-48 h-48 rounded-[3rem] bg-[var(--accent-green)] mx-auto flex items-center justify-center text-7xl text-[var(--bg-panel)] mb-12 shadow-[0_15px_30px_rgba(16,185,129,0.2)] border-4 border-[var(--bg-panel)]">
+                    <i class="fas fa-shield-check"></i>
+                </div>
+                <h1 class="font-display text-6xl md:text-8xl font-black text-[var(--text-main)] tracking-tighter mb-6 uppercase">All Secure!</h1>
+                <p class="text-2xl text-[var(--text-muted)] mb-16 font-medium">You mastered the Present Continuous and home vocabulary.</p>
+                <button onclick="goHome()" class="btn-green px-14 py-5 text-xl">Sign Out</button>
+            </div>
+        `);
+
+        // --- LESSON DATA (Exactly 25 Steps) ---
+        const lessonData = [
+            bGuide("The Smart Home", [
+                "Level: A1.", 
+                "Topic: Daily Home Activities.",
+                "Grammar: Present Continuous (I am doing, He is doing).",
+                "Goal: Describe what is happening right now."
+            ]),
+            
+            bSlider("Mode Selection", "What is your mood today?", "🛋️ Lazy Mode", "🏃 Active Mode", "I am in Lazy Mode today!"),
+
+            bVideo("Camera 1", "aiUGN3TDvw4", "Watch the first part of the video. The people say what THEY are doing.", 0, 38),
+
+            bMCQ("vid1", "Observation", "What is Sian doing?", [
+                "She is cooking.", 
+                "She is eating breakfast.", 
+                "She is exercising."
+            ], 1, "What do you usually eat for breakfast?", "I usually eat..."),
+
+            bSmartCameras("Living Area", [
+                {icon: "fas fa-utensils", room: "Kitchen", action: "Cooking", q: "Who is cooking right now?", starter: "My mom is cooking."},
+                {icon: "fas fa-coffee", room: "Dining Room", action: "Eating", q: "What are you eating?", starter: "I am eating..."}
+            ]),
+
+            bSmartCameras("Activity Zone", [
+                {icon: "fas fa-dumbbell", room: "Gym", action: "Exercising", q: "Do you exercise at home?", starter: "Yes, I exercise in the..."},
+                {icon: "fas fa-briefcase", room: "Garage", action: "Going to work", q: "How do you go to work?", starter: "I go by..."}
+            ]),
+
+            bGrammar("Right Now", "To talk about actions happening RIGHT NOW, we use the verb [To Be] + action with [ING].", [
+                {context: "Routine (General)", text: "I [cook] every day."},
+                {context: "Right Now (Moment)", text: "I [am cooking] right now."}
+            ], "var(--accent-blue)"),
+
+            bTuner("tun1", "Action Switch", "Change the sentence to happening RIGHT NOW.", "I [eat] breakfast.", "I [am eating] breakfast.", "Notice: am + eating"),
+            
+            bWordBuilder("wb1", "Compose Command", "Build a sentence about yourself.", ["I", "am", "cooking", "breakfast", "now", "."]),
+
+            bChat("chat1", "Family Group", "Read the messages from the family.", [
+                {name: 'Mom', s:'B', t:'Hi! Are you home?'}, 
+                {name: 'Me', s:'A', t:'Yes, I am.'}, 
+                {name: 'Mom', s:'B', t:'What is your brother doing?'}, 
+                {name: 'Me', s:'A', t:'He is watching TV in the living room.'},
+                {name: 'Mom', s:'B', t:'And the dog?'},
+                {name: 'Me', s:'A', t:'It is sleeping on the sofa.'}
+            ], "What is the dog doing?", ["Watching TV", "Sleeping", "Eating"], 1),
+
+            bMCQ("mcq1", "Chat Follow-up", "Where is the brother?", [
+                "In the living room.", 
+                "In the kitchen.", 
+                "In the bedroom."
+            ], 0, "Do you watch TV in the living room?", "Yes, I do. / No, I watch it in..."),
+
+            bVideo("Camera 2", "aiUGN3TDvw4", "Watch the second part. The narrator describes what OTHERS are doing.", 91, 130),
+
+            bSmartCameras("Quiet Zone", [
+                {icon: "fas fa-tv", room: "Living Room", action: "Watching TV", q: "What are you watching?", starter: "I am watching..."},
+                {icon: "fas fa-gamepad", room: "Playroom", action: "Playing games", q: "Do you play video games?", starter: "Yes, I play..."}
+            ]),
+
+            bGrammar("He and She", "When talking about ANOTHER person (He/She), we change 'am' to [is] before the ING verb.", [
+                {context: "Me", text: "I [am] sleeping."},
+                {context: "Them", text: "She [is] sleeping."}
+            ], "var(--accent-green)"),
+
+            bTuner("tun2", "Identity Switch", "Change the subject from 'I' to 'He'.", "I [am] watching TV.", "He [is] watching TV.", "Notice: am -> is", "var(--accent-green)"),
+
+            bMatchMaker("Dashboard Link", "Match the person to the action (from the video).", [
+                {left: "Tim", right: "He is watching TV"},
+                {left: "Buli", right: "He is playing video games"},
+                {left: "Georgie", right: "She is sleeping"},
+                {left: "Sian", right: "She is listening to music"}
+            ]),
+
+            bSystemDiagnostic("Sensor Diagnostic", "Sensor 01: The TV is ON. John [is] in the living room. He is [watching] a movie. Sensor 02: Kitchen active. Mary is [cooking] dinner.", ["is", "watching", "cooking"]),
+
+            bBamboozle("Fact Check", 
+                {text: "'I am cook' is correct English.", isTrue: false}, 
+                {text: "To make 'sleep' continuous, we add 'ing' -> sleeping.", isTrue: true}
+            ),
+
+            bFixer("Auto-Caption Bug", [
+                "Camera 01: Living Room.", 
+                "He [are] watching TV.", 
+                "She is [play] video games.", 
+                "They are very loud."
+            ], ["is", "playing"]),
+
+            bFixer("Spelling Bug", [
+                "Camera 02: Kitchen.", 
+                "I am [makeing] a sandwich.", 
+                "Tim is [cook] some eggs."
+            ], ["making", "cooking"]),
+
+            bRoleplay("Voice Assistant", "I am your smart assistant. Answer my questions.", "> Assistant: Hello! What are you doing right now? And what is your best friend doing?"),
+
+            bWrap()
+        ];
+
+        // --- RUNTIME LOGIC ---
+        function toggleElementClass(id, action, className) {
+            const el = document.getElementById(id);
+            if (el) {
+                if (action === 'add') el.classList.add(className);
+                else if (action === 'remove') el.classList.remove(className);
+                else if (action === 'toggle') el.classList.toggle(className);
+            }
+        }
+
+        function startMission() {
+            toggleElementClass('dashboard', 'add', 'hidden'); toggleElementClass('dashboard', 'remove', 'flex');
+            toggleElementClass('hud-top', 'remove', 'hidden'); toggleElementClass('hud-top', 'add', 'flex');
+            toggleElementClass('mission-arena', 'remove', 'hidden'); toggleElementClass('mission-arena', 'add', 'flex');
+            toggleElementClass('nav-console', 'remove', 'hidden'); toggleElementClass('nav-console', 'add', 'flex');
+            buildLessonNavigator(); renderStep();
+        }
+
+        function goHome() {
+            toggleElementClass('dashboard', 'remove', 'hidden'); toggleElementClass('dashboard', 'add', 'flex');
+            toggleElementClass('hud-top', 'add', 'hidden'); toggleElementClass('hud-top', 'remove', 'flex');
+            toggleElementClass('mission-arena', 'add', 'hidden'); toggleElementClass('mission-arena', 'remove', 'flex');
+            toggleElementClass('nav-console', 'add', 'hidden'); toggleElementClass('nav-console', 'remove', 'flex');
+            state.current = 0; updateHUD();
+            document.getElementById('lesson-navigator')?.classList.remove('active');
+            document.getElementById('teacher-hud')?.classList.remove('active');
+            document.getElementById('whiteboard')?.classList.remove('active');
+        }
+
+        function renderStep() {
+            if (!lessonData || !lessonData[state.current]) return;
+            const step = lessonData[state.current];
+            const sCount = document.getElementById('console-counter'); if(sCount) sCount.innerText = `PANEL ${String(state.current + 1).padStart(2, '0')}/${lessonData.length}`;
+            const content = document.getElementById('mission-content'); if(content) content.innerHTML = `<div class="w-full max-w-7xl mx-auto">${step.html}</div>`;
+            updateHUD();
+            
+            const navList = document.getElementById('nav-steps-list');
+            if (navList) {
+                Array.from(navList.children).forEach((btn, i) => {
+                    if(i === state.current) { btn.classList.add('bg-[#E1EFF6]', 'text-[var(--accent-blue)]', 'border-l-4', 'border-[var(--accent-blue)]'); btn.classList.remove('text-[var(--text-main)]'); } 
+                    else { btn.classList.remove('bg-[#E1EFF6]', 'text-[var(--accent-blue)]', 'border-l-4', 'border-[var(--accent-blue)]'); btn.classList.add('text-[var(--text-main)]'); }
+                });
+            }
+            if (step.type === TYPES.BUILDER) setTimeout(setupWb, 100);
+        }
+
+        function nextStep() { if (state.current < lessonData.length - 1) { state.current++; renderStep(); } else { goHome(); } }
+        function prevStep() { if (state.current > 0) { state.current--; renderStep(); } }
+        
+        function toggleLessonNavigator() { document.getElementById('lesson-navigator').classList.toggle('active'); document.getElementById('teacher-hud')?.classList.remove('active'); document.getElementById('whiteboard')?.classList.remove('active');}
+        function toggleTeacherHUD() { document.getElementById('teacher-hud').classList.toggle('active'); document.getElementById('lesson-navigator')?.classList.remove('active'); document.getElementById('whiteboard')?.classList.remove('active');}
+        function toggleWhiteboard() { document.getElementById('whiteboard').classList.toggle('active'); document.getElementById('lesson-navigator')?.classList.remove('active'); document.getElementById('teacher-hud')?.classList.remove('active');}
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(err => console.log(err)); } 
+            else { if (document.exitFullscreen) document.exitFullscreen(); }
+        }
+
+        function toggleStarter(btn) {
+            const content = btn.nextElementSibling;
+            if (content.classList.contains('open')) { content.classList.remove('open'); } else { content.classList.add('open'); }
+        }
+
+        // --- MINIGAMES ---
+
+        function handleQuizTrial(id, row, isCorrect, followup, starter) {
+            if(row.classList.contains('locked-check')) {
+                const parent = row.parentElement; 
+                Array.from(parent.children).forEach(child => { child.onclick = null; child.classList.add('opacity-40', 'cursor-default'); child.classList.remove('locked-check');});
+                row.classList.remove('opacity-40'); 
+                
+                if(isCorrect) {
+                    row.classList.add('correct'); state.xp += 3; updateHUD(); shootConfetti();
+                    const fBox = document.getElementById(`followup-box-${id}`); if(fBox && followup) fBox.classList.remove('hidden');
+                } else { row.classList.add('wrong'); state.hp -= 10; updateHUD(); }
+            }
+        }
+
+        function toggleTuner(id, checkbox, textAff, textAlt, feedback, tagColor) {
+            const textEl = document.getElementById(`tuner-text-${id}`);
+            const aff = document.getElementById(`mode-aff-${id}`);
+            const alt = document.getElementById(`mode-alt-${id}`);
+            textEl.style.opacity = 0;
+            setTimeout(() => {
+                if(checkbox.checked) {
+                    aff.classList.replace('text-[var(--text-main)]', 'text-slate-400'); alt.classList.replace('text-slate-400', 'text-[var(--text-main)]');
+                    textEl.innerHTML = textAlt.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}">$1</span>`); 
+                    document.getElementById(`tuner-fb-${id}`).classList.remove('hidden');
+                } else {
+                    aff.classList.replace('text-slate-400', 'text-[var(--text-main)]'); alt.classList.replace('text-[var(--text-main)]', 'text-slate-400');
+                    textEl.innerHTML = textAff.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}">$1</span>`); 
+                    document.getElementById(`tuner-fb-${id}`).classList.add('hidden');
+                }
+                textEl.style.opacity = 1;
+            }, 200);
+        }
+
+        let activeBug = null; let expectedFix = "";
+        function triggerFixer(el, answer) {
+            if(el.classList.contains('bug-fixed')) return;
+            activeBug = el; expectedFix = answer;
+            const panel = document.getElementById('fix-panel'); panel.classList.remove('translate-y-full');
+            document.getElementById('fix-input').value = ''; document.getElementById('fix-input').focus();
+        }
+        function submitFixer() {
+            const input = document.getElementById('fix-input').value.trim().toLowerCase();
+            const panel = document.getElementById('fix-panel');
+            if(input === expectedFix.toLowerCase()) {
+                activeBug.innerText = expectedFix; activeBug.classList.remove('bug-word'); activeBug.classList.add('bug-fixed');
+                panel.classList.add('translate-y-full');
+                const container = activeBug.closest('.smart-card') || activeBug.parentElement;
+                const remaining = container.querySelectorAll('.bug-word').length;
+                if(remaining === 0) { shootConfetti(); state.xp += 5; updateHUD(); document.getElementById('fixer-hub').classList.remove('hidden');}
+            } else {
+                const inputEl = document.getElementById('fix-input'); inputEl.classList.add('shake', 'border-[var(--accent-red)]');
+                state.hp -= 10; updateHUD();
+                setTimeout(() => inputEl.classList.remove('shake', 'border-[var(--accent-red)]'), 400);
+            }
+        }
+        document.getElementById('fix-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitFixer(); });
+
+        let wbState = {};
+        function setupWb() {
+            document.querySelectorAll('[id^="wb-data-"]').forEach(el => {
+                const id = el.id.replace('wb-data-', '');
+                const expectedData = el.getAttribute('data-expected');
+                wbState[id] = { current: [], expected: JSON.parse(expectedData) };
+            });
+        }
+        function moveWbWord(pill, word, id) {
+            if(pill.classList.contains('used')) return;
+            if(!wbState[id]) return;
+            wbState[id].current.push(word); pill.classList.add('used');
+            const dz = document.getElementById(`wb-dropzone-${id}`);
+            const newPill = document.createElement('span'); newPill.className = 'pill-in-zone'; newPill.innerText = word; dz.appendChild(newPill);
+            if(wbState[id].current.length === wbState[id].expected.length) {
+                let win = wbState[id].current.every((val, index) => val === wbState[id].expected[index]);
+                if(win) { document.getElementById(`wb-fb-${id}`).classList.remove('hidden'); updateHUD(); shootConfetti(); }
+                else { dz.classList.add('shake', 'border-[var(--accent-red)]'); state.hp -= 10; updateHUD(); setTimeout(() => dz.classList.remove('shake', 'border-[var(--accent-red)]'), 400); }
+            }
+        }
+        function resetWb(id) {
+            if(!wbState[id]) return;
+            wbState[id].current = []; document.getElementById(`wb-dropzone-${id}`).innerHTML = ''; document.getElementById(`wb-fb-${id}`).classList.add('hidden');
+            document.getElementById(`wb-bank-${id}`).querySelectorAll('.wb-pill').forEach(p => p.classList.remove('used'));
+        }
+
+        let activeMatch = null; let matchesMatched = 0;
+        function handleMatch(node) {
+            if (node.classList.contains('matched')) return;
+            if (!activeMatch) {
+                activeMatch = node; node.classList.add('active');
+            } else {
+                if (activeMatch.dataset.type !== node.dataset.type && activeMatch.dataset.id === node.dataset.id) {
+                    activeMatch.classList.replace('active', 'matched'); node.classList.add('matched');
+                    activeMatch = null; matchesMatched++; state.xp += 2; updateHUD();
+                    const totalPairs = document.getElementById('match-board').children[0].children.length;
+                    if(matchesMatched === totalPairs) { document.getElementById('match-hub').classList.remove('hidden'); shootConfetti(); matchesMatched = 0; }
+                } else {
+                    activeMatch.classList.remove('active'); activeMatch.classList.add('shake', 'border-[var(--accent-red)]', 'text-[var(--accent-red)]'); node.classList.add('shake', 'border-[var(--accent-red)]', 'text-[var(--accent-red)]');
+                    state.hp -= 10; updateHUD();
+                    setTimeout(() => { activeMatch.classList.remove('shake', 'border-[var(--accent-red)]', 'text-[var(--accent-red)]'); node.classList.remove('shake', 'border-[var(--accent-red)]', 'text-[var(--accent-red)]'); activeMatch = null; }, 400);
+                }
+            }
+        }
+
+        function checkBamb(q, isCorrect) {
+            const container = document.getElementById(`bamb-q${q}`);
+            if(isCorrect) {
+                container.classList.add('hidden');
+                if(q === 1) document.getElementById('bamb-q2').classList.remove('hidden');
+                else { document.getElementById('bamb-fb').classList.remove('hidden'); shootConfetti(); }
+            } else {
+                container.classList.add('shake', 'border-2', 'border-[var(--accent-red)]');
+                setTimeout(() => container.classList.remove('shake', 'border-2', 'border-[var(--accent-red)]'), 400);
+            }
+        }
+
+        // NOVO: Censored Block Logic
+        let censoredRevealed = 0;
+        function revealCensored(el, word) {
+            if(el.classList.contains('revealed')) return;
+            el.innerText = word; el.classList.add('revealed');
+            censoredRevealed++;
+            const container = el.closest('.smart-card');
+            const total = container.querySelectorAll('.censored-block').length;
+            if(censoredRevealed === total) {
+                document.getElementById('censored-fb').classList.remove('hidden');
+                shootConfetti(); state.xp += 5; updateHUD(); censoredRevealed = 0;
+            }
+        }
+
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId); curId -= 1;
+                let tmp = array[curId]; array[curId] = array[randId]; array[randId] = tmp;
+            }
+            return array;
+        }
+
+        function buildLessonNavigator() {
+            const list = document.getElementById('nav-steps-list'); if (!list) return;
+            list.innerHTML = '';
+            lessonData.forEach((step, i) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-3 rounded-xl flex items-center gap-3 transition-all font-display text-sm ${i === state.current ? 'bg-[#E1EFF6] text-[var(--accent-blue)] font-bold border-l-4 border-[var(--accent-blue)] shadow-sm' : 'text-slate-500 hover:bg-[var(--bg-base)]'}`;
+                btn.innerHTML = `<span class="w-6 opacity-50 font-bold">${i+1}</span><div class="flex flex-col truncate"><span class="truncate">${step.title}</span></div>`;
+                btn.onclick = () => { state.current = i; renderStep(); toggleLessonNavigator(); };
+                list.appendChild(btn);
+            });
+        }
+
+        function triggerPraise(main, sub) {
+            document.getElementById('teacher-hud')?.classList.remove('active'); 
+            const overlay = document.getElementById('praise-overlay'); const card = document.getElementById('praise-card');
+            
+            if(main === 'VERIFIED') {
+                card.className = "smart-card p-16 rounded-[3rem] text-center transform scale-50 transition-transform duration-500 border-b-8 border-[var(--accent-blue)] shadow-2xl";
+                document.getElementById('praise-main').className = "font-display text-6xl md:text-8xl font-black tracking-tighter uppercase mb-4 text-[var(--accent-blue)] drop-shadow-sm";
+            } else {
+                card.className = "smart-card p-16 rounded-[3rem] text-center transform scale-50 transition-transform duration-500 border-b-8 border-[var(--accent-green)] shadow-2xl";
+                document.getElementById('praise-main').className = "font-display text-6xl md:text-8xl font-black tracking-tighter uppercase mb-4 text-[var(--accent-green)] drop-shadow-sm";
+            }
+            
+            document.getElementById('praise-main').innerText = main; document.getElementById('praise-sub').innerText = sub;
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => card.classList.replace('scale-50', 'scale-100'), 50); shootConfetti();
+            setTimeout(() => { card.classList.replace('scale-100', 'scale-50'); overlay.classList.add('opacity-0', 'pointer-events-none'); }, 2500);
+        }
+
+        function shootConfetti() {
+            const cCanvas = document.getElementById('confetti-canvas'); const cCtx = cCanvas.getContext('2d');
+            cCanvas.width = window.innerWidth; cCanvas.height = window.innerHeight;
+            const pieces = []; const colors = ['#0284C7', '#059669', '#DC2626', '#EEF4F8'];
+            for(let i=0; i<60; i++) pieces.push({ x: cCanvas.width/2, y: cCanvas.height/2+100, vx: (Math.random()-0.5)*20, vy: (Math.random()-1)*20-5, size: Math.random()*10+5, color: colors[Math.floor(Math.random()*colors.length)], rot: Math.random()*360, rotSpeed: (Math.random()-0.5)*10 });
+            let animationId;
+            function animateC() {
+                cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height); let active = false;
+                pieces.forEach(p => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.rot += p.rotSpeed; if(p.y < cCanvas.height) active = true;
+                    cCtx.save(); cCtx.translate(p.x, p.y); cCtx.rotate(p.rot*Math.PI/180); cCtx.fillStyle = p.color; 
+                    // Circular confetti
+                    cCtx.beginPath(); cCtx.arc(0, 0, p.size/2, 0, Math.PI*2); cCtx.fill(); cCtx.restore();
+                });
+                if(active) animationId = requestAnimationFrame(animateC); else cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+            }
+            animateC();
+        }
+        
+        window.onload = () => { updateHUD(); buildLessonNavigator(); goHome(); };
+    </script>
+</body>
+</html>
